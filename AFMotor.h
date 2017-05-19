@@ -28,13 +28,6 @@
 #define BRAKE 3
 #define RELEASE 4
 
-// Constants that the user passes in to the stepper calls
-#define SINGLE 1
-#define DOUBLE 2
-#define INTERLEAVE 3
-#define MICROSTEP 4
-
-
 // Arduino pin names for interface to 74HCT595 latch
 #define MOTORLATCH 12
 #define MOTORCLK 4
@@ -57,6 +50,7 @@ class AF_DCMotor
   AF_DCMotor(uint8_t motornum);
   void run(uint8_t);
   void setSpeed(uint8_t);
+  friend class Robot;
 
  private:
   uint8_t motornum;
