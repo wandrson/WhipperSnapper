@@ -7,6 +7,7 @@
 // removed.
 
 #include "Arduino.h"
+#include "env.h"
 #include "AFMotor.h"
 
 static uint8_t latch_state;

@@ -1,4 +1,5 @@
 // copyright 2017 by Walter Anderson
+#include "env.h"
 #include "Robot.h"
 
 // Constructor
@@ -25,11 +26,42 @@ void Robot::stop(void)
   FrtLft.run(RELEASE);
   FrtRgt.run(RELEASE);
 
+  // Set the new motor speeds in a pattern to avoid veering the robot
+  BckLft.setSpeed(0);
+  BckRgt.setSpeed(0);
+  FrtLft.setSpeed(0);
+  FrtRgt.setSpeed(0);
+
+#if defined (DEBUG)
+  Serial.println("Robot Stop Command");
+  Serial.println("Current status");
+  Serial.print("\tLeft status: ");
+  Serial.println(MotorStatus[LEFT]);
+  Serial.print("\tRight status: ");
+  Serial.println(MotorStatus[RIGHT]);
+  Serial.print("\tLeft motors speed: ");
+  Serial.println(current_speeds[LEFT]);
+  Serial.print("\tRight motors speed: ");
+  Serial.println(current_speeds[RIGHT]);
+#endif
+
   // Now update the various status variables
   MotorStatus[LEFT] = RELEASE;
   MotorStatus[RIGHT] = RELEASE;
   current_speeds[LEFT] = 0;
   current_speeds[RIGHT] = 0;
+
+#if defined (DEBUG)
+  Serial.println("New status");
+  Serial.print("\tLeft status: ");
+  Serial.println(MotorStatus[LEFT]);
+  Serial.print("\tRight status: ");
+  Serial.println(MotorStatus[RIGHT]);
+  Serial.print("\tLeft motors speed: ");
+  Serial.println(current_speeds[LEFT]);
+  Serial.print("\tRight motors speed: ");
+  Serial.println(current_speeds[RIGHT]);
+#endif
 }
 
 // Basic method for controlling the motion of the robot.  The
@@ -41,8 +73,20 @@ void Robot::move(int left, int right)
   uint8_t lms, rms, ltmp, rtmp, indx;
   int linc, rinc;                               // Incremental change values for speed change
   int num_units=10;                             // Number of steps to use when ramping speed
-    
-  // First determine new motor status from the absolute value of the provided speeds
+
+#if defined (DEBUG)
+  Serial.println("Robot Move Command");
+  Serial.println("Current status");
+  Serial.print("\tLeft status: ");
+  Serial.println(MotorStatus[LEFT]);
+  Serial.print("\tRight status: ");
+  Serial.println(MotorStatus[RIGHT]);
+  Serial.print("\tLeft motors speed: ");
+  Serial.println(current_speeds[LEFT]);
+  Serial.print("\tRight motors speed: ");
+  Serial.println(current_speeds[RIGHT]);
+#endif
+
   if (left < 0) 
     lms = BACKWARD;
   else if (left > 0) 
@@ -59,10 +103,6 @@ void Robot::move(int left, int right)
   // Save these new values
   MotorStatus[LEFT] = lms;
   MotorStatus[RIGHT] = rms;
-  //Serial.print("Left status: ");
-  //Serial.println(lms);
-  //Serial.print("Right status: ");
-  //Serial.println(rms);
   
   // Now change the motor status to the new calculated value
   BckLft.run(lms);
@@ -89,18 +129,25 @@ void Robot::move(int left, int right)
     // Increment/decrement the speed by the calculated unit
     ltmp += linc;                                                 
     rtmp += rinc;
-    //Serial.print("Left motors speed: ");
-    //Serial.println(ltmp);
-    //Serial.print("Right motors speed: ");
-    //Serial.println(rtmp);
-    //Serial.println(" ");
     // Set the new motor speeds in a pattern to avoid veering the robot
     BckLft.setSpeed(ltmp);
     BckRgt.setSpeed(rtmp);
     FrtLft.setSpeed(ltmp);
     FrtRgt.setSpeed(rtmp);
   }
- 
+
+#if defined (DEBUG)
+  Serial.println("New status");
+  Serial.print("\tLeft status: ");
+  Serial.println(lms);
+  Serial.print("\tRight status: ");
+  Serial.println(rms);
+  Serial.print("\tLeft motors speed: ");
+  Serial.println(ltmp);
+  Serial.print("\tRight motors speed: ");
+  Serial.println(rtmp);
+#endif
+
   // Before leaving method, update the current speeds to those just set
   current_speeds[LEFT] = left;
   current_speeds[RIGHT] = right;
